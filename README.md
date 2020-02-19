@@ -2,6 +2,13 @@
 
 Java template generator.
 
+Features:
+
+- **Clean templates.**
+  Substitution only, no expressions, no statements.
+- **Clean output.**
+  Produces properly indented output.
+
 ```
 $ cat templates/NavItem.jtg
 <li>
