@@ -16,8 +16,10 @@ import jtg.templates.TextSetter;
 
 public final class Generator {
 
-    private final Pattern TEMPLATE_LINE = Pattern.compile("^(\\s*)\\$\\{([A-Za-z_$][A-Za-z0-9_$]*)}\\s*$");
-    private final Pattern TEXT_LINE = Pattern.compile("\\$\\{([A-Za-z_$][A-Za-z0-9_$]*)}");
+    private final String PLACEHOLDER = "\\$(?:([A-Za-z_][A-Za-z0-9_]*)|\\{([A-Za-z_][A-Za-z0-9_]*)})";
+
+    private final Pattern TEMPLATE_LINE = Pattern.compile("^(\\s*)" + PLACEHOLDER + "\\s*$");
+    private final Pattern TEXT_LINE = Pattern.compile(PLACEHOLDER);
 
     public String generate(String packageName, String className, String input) {
         jtg.templates.Template template = new jtg.templates.Template();
@@ -38,13 +40,16 @@ public final class Generator {
             Matcher matcher;
             matcher = TEMPLATE_LINE.matcher(line);
             if (matcher.find()) {
-                Text nameText = prefix(matcher.group(2));
+                String name = matcher.group(2) == null
+                        ? matcher.group(3)
+                        : matcher.group(2);
+                Text nameText = prefix(name);
                 fields.add(new TemplateField()
                         .withName(nameText));
                 setters.add(new TemplateSetter()
                         .withName(nameText)
                         .withClass(classNameText)
-                        .withUpperFirstName(upperFirst(matcher.group(2))));
+                        .withUpperFirstName(upperFirst(name)));
                 lines.add(new TemplateLine()
                         .withIndentation(quote(matcher.group(1)))
                         .withName(nameText));
@@ -55,13 +60,16 @@ public final class Generator {
                 lines.add(new IndentLine());
                 int last = 0;
                 do {
-                    Text nameText = prefix(matcher.group(1));
+                    String name = matcher.group(1) == null
+                            ? matcher.group(2)
+                            : matcher.group(1);
+                    Text nameText = prefix(name);
                     fields.add(new TextField()
                             .withName(nameText));
                     setters.add(new TextSetter()
                             .withName(nameText)
                             .withClass(classNameText)
-                            .withUpperFirstName(upperFirst(matcher.group(1))));
+                            .withUpperFirstName(upperFirst(name)));
                     lines.add(new StringLine()
                             .withContent(quote(line.substring(last, matcher.start()))));
                     lines.add(new TextLine()

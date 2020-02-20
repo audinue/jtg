@@ -1,6 +1,6 @@
 #!/bin/sh
 
-scd=`dirname "${BASH_SOURCE[0]}"`
+scd=/root/NetBeansProjects/jtg
 app=$scd/jtg-app/dist/jtg-app.jar
 lib=$scd/jtg-lib/dist/jtg-lib.jar
 run=$scd/jtg-run/dist/jtg-run.jar
